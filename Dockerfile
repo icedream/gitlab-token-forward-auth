@@ -4,7 +4,7 @@
 FROM golang:1.12-alpine
 WORKDIR /usr/src/gitlab-token-forward-auth
 COPY . .
-ENV GOBIN /target/bin/go
+ENV GOBIN /target/bin/
 RUN mkdir -p "${GOBIN}"
 RUN apk add --no-cache git
 RUN go install -v ./cmd/...
