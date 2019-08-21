@@ -1,0 +1,6 @@
+/gitlab-token-authd
+*.toml
+*.yaml
+*.yml
+*.json
+*.log
