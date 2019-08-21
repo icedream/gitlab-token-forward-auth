@@ -4,3 +4,5 @@
 *.yml
 *.json
 *.log
+.git*
+*.md
