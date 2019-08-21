@@ -14,4 +14,4 @@ RUN go install -v ./cmd/...
 FROM alpine:latest
 COPY --from=0 /target/ /usr/local/
 WORKDIR /data
-ENTRYPOINT ["gitlab-token-forward-authd"]
+ENTRYPOINT ["gitlab-token-authd"]
