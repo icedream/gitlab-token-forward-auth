@@ -6,6 +6,7 @@ WORKDIR /usr/src/gitlab-token-forward-auth
 COPY . .
 ENV GOBIN /target/bin/go
 RUN mkdir -p "${GOBIN}"
+RUN apk add --no-cache git
 RUN go install -v ./cmd/...
 
 ###
