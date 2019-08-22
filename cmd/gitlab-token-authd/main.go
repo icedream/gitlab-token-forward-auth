@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
 	"github.com/fsnotify/fsnotify"
@@ -46,9 +47,11 @@ func main() {
 	// Set up server
 	r := gin.Default()
 	r.Any("/auth", func(ctx *gin.Context) {
+		wwwAuthenticateHeader := "Basic realm=" + strconv.Quote(viper.GetString("Server.AuthenticationRealm"))
+
 		basicAuthUser, basicAuthPass, ok := ctx.Request.BasicAuth()
 		if !ok {
-			ctx.Header("WWW-Authenticate", viper.GetString("Server.AuthenticationRealm"))
+			ctx.Header("WWW-Authenticate", wwwAuthenticateHeader)
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
@@ -107,7 +110,7 @@ func main() {
 			}
 			log.Println(authResponse.Status)
 			if authResponse.StatusCode != http.StatusOK {
-				ctx.Header("WWW-Authenticate", viper.GetString("Server.AuthenticationRealm"))
+				ctx.Header("WWW-Authenticate", wwwAuthenticateHeader)
 				ctx.AbortWithStatus(http.StatusUnauthorized)
 				return
 			}
@@ -122,7 +125,7 @@ func main() {
 
 			// Check whether this token is valid for the given username
 			if authResponseStruct.Username != basicAuthUser {
-				ctx.Header("WWW-Authenticate", viper.GetString("Server.AuthenticationRealm"))
+				ctx.Header("WWW-Authenticate", wwwAuthenticateHeader)
 				ctx.AbortWithStatus(http.StatusUnauthorized)
 				return
 			}
@@ -146,7 +149,7 @@ func main() {
 			return
 		}
 		if groupsResponse.StatusCode != http.StatusOK {
-			ctx.Header("WWW-Authenticate", viper.GetString("Server.AuthenticationRealm"))
+			ctx.Header("WWW-Authenticate", wwwAuthenticateHeader)
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
@@ -176,7 +179,7 @@ func main() {
 		if isAuthorized {
 			ctx.Status(http.StatusOK)
 		} else {
-			ctx.Header("WWW-Authenticate", viper.GetString("Server.AuthenticationRealm"))
+			ctx.Header("WWW-Authenticate", wwwAuthenticateHeader)
 			ctx.Status(http.StatusUnauthorized)
 		}
 	})
