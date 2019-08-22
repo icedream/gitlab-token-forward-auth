@@ -26,6 +26,7 @@ func main() {
 	viper.AddConfigPath(".")
 
 	viper.SetDefault("Server.Address", ":8080")
+	viper.SetDefault("Server.AuthenticationRealm", "Please log in with your GitLab username and a personal access token.")
 	viper.SetDefault("GitLab.URL", "http://localhost")
 	viper.SetDefault("GitLab.AuthorizedUsers", []string{})
 	viper.SetDefault("GitLab.AuthorizedGroups", []string{})
@@ -47,6 +48,7 @@ func main() {
 	r.Any("/auth", func(ctx *gin.Context) {
 		basicAuthUser, basicAuthPass, ok := ctx.Request.BasicAuth()
 		if !ok {
+			ctx.Header("WWW-Authenticate", viper.GetString("Server.AuthenticationRealm"))
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
@@ -105,6 +107,7 @@ func main() {
 				return
 			}
 			if authResponse.StatusCode != http.StatusOK {
+				ctx.Header("WWW-Authenticate", viper.GetString("Server.AuthenticationRealm"))
 				ctx.AbortWithStatus(http.StatusUnauthorized)
 				return
 			}
@@ -119,6 +122,7 @@ func main() {
 
 			// Check whether this token is valid for the given username
 			if authResponseStruct.Username != basicAuthUser {
+				ctx.Header("WWW-Authenticate", viper.GetString("Server.AuthenticationRealm"))
 				ctx.AbortWithStatus(http.StatusUnauthorized)
 				return
 			}
@@ -142,6 +146,7 @@ func main() {
 			return
 		}
 		if groupsResponse.StatusCode != http.StatusOK {
+			ctx.Header("WWW-Authenticate", viper.GetString("Server.AuthenticationRealm"))
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
@@ -171,6 +176,7 @@ func main() {
 		if isAuthorized {
 			ctx.Status(http.StatusOK)
 		} else {
+			ctx.Header("WWW-Authenticate", viper.GetString("Server.AuthenticationRealm"))
 			ctx.Status(http.StatusUnauthorized)
 		}
 	})
