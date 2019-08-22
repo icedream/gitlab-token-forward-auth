@@ -101,11 +101,11 @@ func main() {
 			authRequest.Header.Set("PRIVATE-TOKEN", personalAccessToken)
 			log.Println("/api/v4/user")
 			authResponse, err := httpClient.Do(authRequest)
-			log.Println(authResponse.Status)
 			if err != nil {
 				ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to authenticate against GitLab server: %s", err.Error()))
 				return
 			}
+			log.Println(authResponse.Status)
 			if authResponse.StatusCode != http.StatusOK {
 				ctx.Header("WWW-Authenticate", viper.GetString("Server.AuthenticationRealm"))
 				ctx.AbortWithStatus(http.StatusUnauthorized)
