@@ -12,6 +12,7 @@ RUN go install -v ./cmd/...
 ###
 
 FROM alpine:latest
+RUN apk add --no-cache ca-certificates
 COPY --from=0 /target/ /usr/local/
 WORKDIR /data
 ENTRYPOINT ["gitlab-token-authd"]
