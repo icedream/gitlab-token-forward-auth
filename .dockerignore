@@ -4,5 +4,8 @@
 *.yml
 *.json
 *.log
+
+Docker*
+.docker*
 .git*
 *.md
